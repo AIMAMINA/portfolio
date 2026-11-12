@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { About, Contact, Hero, Journey, Playground, Skills, Travel, Work } from "./components/Sections";
 import { asides, profile } from "./content";
 import { useReveal, useTheme } from "./hooks";
-import photo from "./assets/photo.webp";
+import photo from "./assets/avatar.webp";
 
 const NAV = [
   { href: "#work", label: "Work" },

@@ -197,42 +197,31 @@ export function About({ photo }) {
 
   return (
     <Section id="about" label="About" right="Constantine → Paris">
-      <div className="grid items-start gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
-        <figure className="reveal group md:sticky md:top-28">
-          <div className="overflow-hidden rounded-sm bg-line dark:bg-line-dark">
-            <img
-              src={photo}
-              alt={`Portrait of ${profile.firstName} ${profile.lastName}`}
-              className="aspect-[5/4] w-full object-cover object-[50%_35%] transition-[filter,transform] duration-700 group-hover:scale-[1.02] group-hover:grayscale-0 md:aspect-[4/5] [@media(hover:hover)]:grayscale"
-            />
-          </div>
-          <figcaption className="mt-3 flex justify-between gap-4">
-            <Mono>
-              {profile.firstName} {profile.lastName}, Paris 2026
-            </Mono>
-            <Mono className="hidden md:[@media(hover:hover)]:inline">{asides.photo}</Mono>
-          </figcaption>
-        </figure>
+      <div className="reveal flex items-center gap-5 sm:gap-7">
+        <img
+          src={photo}
+          alt={`Portrait of ${profile.firstName} ${profile.lastName}`}
+          className="size-16 shrink-0 rounded-full object-cover ring-1 ring-line sm:size-24 dark:ring-line-dark"
+        />
+        <h2 className="text-[clamp(2.2rem,5vw,4rem)] leading-[1.02]">
+          Quiet in meetings.
+          <br />
+          <em className="text-accent dark:text-accent-dark">Loud in commits.</em>
+        </h2>
+      </div>
 
-        <div>
-          <h2 className="reveal text-[clamp(2.4rem,5vw,4rem)] leading-[1.02]">
-            Quiet in meetings.
-            <br />
-            <em className="text-accent dark:text-accent-dark">Loud in commits.</em>
-          </h2>
-          <p className="reveal mt-8 text-lg leading-relaxed sm:text-xl">{profile.intro}</p>
-
-          <dl className="reveal mt-12 border-t border-line dark:border-line-dark">
-            {facts.map((f) => (
-              <div key={f.label} className="grid grid-cols-[6.5rem_1fr] items-baseline gap-4 border-b border-line py-4 sm:grid-cols-[8rem_1fr] dark:border-line-dark">
-                <dt>
-                  <Mono>{f.label}</Mono>
-                </dt>
-                <dd className="text-[15px]">{f.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+      <div className="mt-14 grid gap-12 md:grid-cols-2 md:gap-16">
+        <p className="reveal text-lg leading-relaxed sm:text-xl">{profile.intro}</p>
+        <dl className="reveal border-t border-line dark:border-line-dark">
+          {facts.map((f) => (
+            <div key={f.label} className="grid grid-cols-[6.5rem_1fr] items-baseline gap-4 border-b border-line py-4 sm:grid-cols-[8rem_1fr] dark:border-line-dark">
+              <dt>
+                <Mono>{f.label}</Mono>
+              </dt>
+              <dd className="text-[15px]">{f.value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </Section>
   );
