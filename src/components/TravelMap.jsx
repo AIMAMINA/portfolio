@@ -68,7 +68,7 @@ export default function TravelMap({ active, setActive }) {
                 x={x + (p.label.dx ?? 9)}
                 y={y + (p.label.dy ?? 4)}
                 textAnchor={anchor}
-                className={`font-sans text-[12.5px] transition-colors group-focus-visible:underline ${
+                className={`font-sans text-[12.5px] transition-colors max-sm:hidden group-focus-visible:underline ${
                   isActive ? "fill-accent dark:fill-accent-dark" : "fill-ink group-hover:fill-accent dark:fill-chalk dark:group-hover:fill-accent-dark"
                 }`}
                 style={{ paintOrder: "stroke", stroke: "var(--label-halo)", strokeWidth: 4, strokeLinejoin: "round" }}

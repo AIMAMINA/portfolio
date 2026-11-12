@@ -118,6 +118,7 @@ export const jokes = [
 // Short asides shown next to some sections
 export const asides = {
   photo: "hover me. I don't bite.",
+  photoTouch: "yes, that's really me.",
   about: "Quiet in meetings. Loud in commits.",
   path: "the short version. the long one needs more coffee.",
   skills: "sorted, unlike my desktop.",

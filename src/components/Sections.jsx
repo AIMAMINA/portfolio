@@ -15,9 +15,9 @@ function Section({ id, label, right, children, className = "" }) {
   return (
     <section id={id} className={`border-t border-line py-24 md:py-32 dark:border-line-dark ${className}`}>
       <div className="mx-auto max-w-5xl px-6">
-        <div className="reveal mb-12 flex items-baseline justify-between gap-6">
+        <div className="reveal mb-10 flex flex-col gap-1 sm:mb-12 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
           <Mono>{label}</Mono>
-          {right && <Mono className="text-right">{right}</Mono>}
+          {right && <Mono className="sm:text-right">{right}</Mono>}
         </div>
         {children}
       </div>
@@ -103,6 +103,7 @@ function ProjectRow({ project, index }) {
             {project.name}
           </span>
           <span className="mt-1 block text-[15px] text-mute dark:text-mute-dark">{project.tagline}</span>
+          <span className="mt-2 block font-mono text-xs text-accent md:hidden dark:text-accent-dark">{project.joke}</span>
         </span>
         <span
           className={`text-2xl text-mute transition-all duration-500 group-hover:text-accent dark:text-mute-dark dark:group-hover:text-accent-dark ${open ? "rotate-90" : "group-hover:-rotate-45"}`}
@@ -136,7 +137,7 @@ function ProjectRow({ project, index }) {
                       src={src}
                       alt={`${project.name}, screen ${i + 1}`}
                       loading="lazy"
-                      className="aspect-[16/10] w-full object-cover object-top grayscale transition-all duration-700 hover:scale-[1.03] hover:grayscale-0"
+                      className="aspect-[16/10] w-full object-cover object-top transition-all duration-700 hover:scale-[1.03] hover:grayscale-0 [@media(hover:hover)]:grayscale"
                     />
                   </div>
                 ))}
@@ -168,10 +169,10 @@ export function Work() {
         <Mono>Also built</Mono>
         <ul className="mt-6">
           {moreProjects.map((p) => (
-            <li key={p.name} className="grid gap-1 border-b border-line py-5 md:grid-cols-[16rem_1fr_auto] md:gap-6 dark:border-line-dark">
+            <li key={p.name} className="grid gap-1 border-b border-line py-5 sm:grid-cols-[minmax(0,13rem)_1fr] sm:gap-x-6 lg:grid-cols-[16rem_1fr_auto] dark:border-line-dark">
               <span className="font-serif text-2xl leading-tight">{p.name}</span>
               <span className="text-[15px] text-mute dark:text-mute-dark">{p.text}</span>
-              <Mono className="md:text-right">{p.stack.join(" / ")}</Mono>
+              <Mono className="sm:col-start-2 lg:col-start-auto lg:text-right">{p.stack.join(" / ")}</Mono>
             </li>
           ))}
         </ul>
@@ -188,10 +189,11 @@ export function About({ photo }) {
           <img
             src={photo}
             alt={`Portrait of ${profile.firstName} ${profile.lastName}`}
-            className="aspect-[4/5] w-full rounded-md object-cover grayscale transition-[filter] duration-700 group-hover:grayscale-0"
+            className="aspect-[4/5] w-full rounded-md object-cover transition-[filter] duration-700 group-hover:grayscale-0 [@media(hover:hover)]:grayscale"
           />
           <figcaption className="mt-3">
-            <Mono>{asides.photo}</Mono>
+            <Mono className="hidden [@media(hover:hover)]:inline">{asides.photo}</Mono>
+            <Mono className="[@media(hover:hover)]:hidden">{asides.photoTouch}</Mono>
           </figcaption>
         </figure>
         <div>
@@ -211,7 +213,7 @@ export function About({ photo }) {
             ))}
           </div>
 
-          <dl className="reveal mt-10 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+          <dl className="reveal mt-10 grid grid-cols-2 gap-x-6 gap-y-4 lg:grid-cols-4">
             {profile.languages.map((l) => (
               <div key={l.name}>
                 <dt className="text-[15px]">{l.name}</dt>
@@ -306,7 +308,7 @@ export function Travel() {
             and counting.
           </h2>
           <p className="mt-5 max-w-sm text-[15px] text-mute dark:text-mute-dark">
-            New places taught me what code does too: adapt fast and look closely. Click a country on the map.
+            New places taught me what code does too: adapt fast and look closely. Pick a country on the map.
           </p>
           <div className="mt-8 min-h-[4.5rem] border-l-2 border-accent pl-4 dark:border-accent-dark" aria-live="polite">
             {trip ? (
@@ -321,6 +323,24 @@ export function Travel() {
               <Mono>nothing selected yet</Mono>
             )}
           </div>
+          <ul className="mt-6 flex flex-wrap gap-2 lg:hidden">
+            {trips.map((t) => (
+              <li key={t.country}>
+                <button
+                  type="button"
+                  onClick={() => setActive((a) => (a === t.country ? null : t.country))}
+                  aria-pressed={active === t.country}
+                  className={`rounded-full border px-3 py-1.5 font-mono text-xs transition-colors ${
+                    active === t.country
+                      ? "border-accent text-accent dark:border-accent-dark dark:text-accent-dark"
+                      : "border-line text-mute dark:border-line-dark dark:text-mute-dark"
+                  }`}
+                >
+                  {t.country}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="reveal">
           <TravelMap active={active} setActive={setActive} />

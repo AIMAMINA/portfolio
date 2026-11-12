@@ -144,7 +144,7 @@ export default function Terminal() {
       <div
         ref={bodyRef}
         onClick={() => inputRef.current?.focus()}
-        className="h-80 overflow-y-auto px-5 py-4 font-mono text-[13px] leading-relaxed md:h-96 md:text-sm"
+        className="h-72 overflow-y-auto px-4 py-4 sm:h-80 sm:px-5 font-mono text-[13px] leading-relaxed md:h-96 md:text-sm"
         role="log"
         aria-live="polite"
       >
@@ -184,7 +184,7 @@ export default function Terminal() {
             autoComplete="off"
             autoCapitalize="off"
             spellCheck="false"
-            className="w-full bg-transparent caret-accent outline-none"
+            className="w-full bg-transparent text-base caret-accent md:text-sm outline-none"
             aria-label="Type a command"
           />
         </div>

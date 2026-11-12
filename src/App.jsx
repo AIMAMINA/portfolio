@@ -14,6 +14,13 @@ const NAV = [
 
 function Nav({ dark, toggle }) {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
@@ -24,14 +31,14 @@ function Nav({ dark, toggle }) {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "border-b border-line bg-paper/85 py-3 backdrop-blur-md dark:border-line-dark dark:bg-stage/85" : "py-6"
+        scrolled || open ? "border-b border-line bg-paper/90 py-3 backdrop-blur-md dark:border-line-dark dark:bg-stage/90" : "py-5 sm:py-6"
       }`}
     >
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 px-6">
-        <a href="#top" className="font-serif text-2xl">
+        <a href="#top" onClick={() => setOpen(false)} className="font-serif text-xl sm:text-2xl">
           {profile.firstName} {profile.lastName}
         </a>
-        <nav className="flex items-center gap-7">
+        <nav className="flex items-center gap-3 sm:gap-7">
           <ul className="hidden items-center gap-7 text-sm md:flex">
             {NAV.map((n) => (
               <li key={n.href}>
@@ -49,7 +56,35 @@ function Nav({ dark, toggle }) {
           >
             {dark ? "lights on" : "lights off"}
           </button>
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            className="font-mono text-xs underline underline-offset-4 md:hidden"
+          >
+            {open ? "close" : "menu"}
+          </button>
         </nav>
+      </div>
+
+      <div
+        id="mobile-menu"
+        className={`absolute inset-x-0 top-full h-[100svh] border-t border-line bg-paper px-6 pt-8 dark:border-line-dark transition-[opacity,visibility] duration-300 md:hidden dark:bg-stage ${
+          open ? "visible opacity-100" : "invisible opacity-0"
+        }`}
+      >
+        <ul className="space-y-2">
+          {NAV.map((n, i) => (
+            <li key={n.href} className="flex items-baseline gap-4 border-b border-line py-3 dark:border-line-dark">
+              <span className="font-mono text-xs text-mute dark:text-mute-dark">{String(i + 1).padStart(2, "0")}</span>
+              <a href={n.href} onClick={() => setOpen(false)} className="font-serif text-4xl">
+                {n.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-8 font-mono text-xs text-mute dark:text-mute-dark">short menu. like my attention span before coffee.</p>
       </div>
     </header>
   );
