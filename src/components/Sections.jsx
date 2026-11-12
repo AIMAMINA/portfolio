@@ -181,7 +181,7 @@ export function Work() {
   );
 }
 
-export function About({ face }) {
+export function About({ photo }) {
   const mother = profile.languages.filter((l) => l.level.startsWith("mother"));
   const others = profile.languages.filter((l) => !l.level.startsWith("mother"));
   const facts = [
@@ -192,57 +192,47 @@ export function About({ face }) {
       label: "Speaks",
       value: `${mother.map((l) => l.name).join(" and ")} (mother tongues), ${others.map((l) => `${l.name} (${l.level})`).join(", ")}`,
     },
-    { label: "Looking for", value: "An alternating internship, Nov 2026 to June 2027" },
     { label: "Off screen", value: profile.interests.join(", ") },
   ];
 
   return (
     <Section id="about" label="About" right="Constantine → Paris">
-      <h2 className="reveal text-[clamp(2.6rem,8vw,6rem)] leading-[1.02]">
-        Quiet in meetings.
-        <br />
-        Loud in{" "}
-        <span className="group relative inline-block align-middle">
-          <img
-            src={face}
-            alt={`Portrait of ${profile.firstName} ${profile.lastName}`}
-            className="inline-block h-[0.82em] w-[1.1em] rounded-full object-cover ring-1 ring-line dark:ring-line-dark transition-[filter,transform] duration-700 group-hover:scale-105 group-hover:grayscale-0 [@media(hover:hover)]:grayscale"
-          />
-        </span>{" "}
-        commits.
-      </h2>
-      <p className="reveal mt-4">
-        <Mono className="hidden [@media(hover:hover)]:inline">↑ {asides.photo}</Mono>
-        <Mono className="[@media(hover:hover)]:hidden">↑ {asides.photoTouch}</Mono>
-      </p>
+      <div className="grid items-start gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
+        <figure className="reveal group md:sticky md:top-28">
+          <div className="overflow-hidden rounded-sm bg-line dark:bg-line-dark">
+            <img
+              src={photo}
+              alt={`Portrait of ${profile.firstName} ${profile.lastName}`}
+              className="aspect-[5/4] w-full object-cover object-[50%_35%] transition-[filter,transform] duration-700 group-hover:scale-[1.02] group-hover:grayscale-0 md:aspect-[4/5] [@media(hover:hover)]:grayscale"
+            />
+          </div>
+          <figcaption className="mt-3 flex justify-between gap-4">
+            <Mono>
+              {profile.firstName} {profile.lastName}, Paris 2026
+            </Mono>
+            <Mono className="hidden md:[@media(hover:hover)]:inline">{asides.photo}</Mono>
+          </figcaption>
+        </figure>
 
-      <div className="mt-16 grid gap-14 md:grid-cols-[1fr_1.1fr] md:gap-16">
-        <div className="reveal">
-          <p className="text-xl leading-relaxed">{profile.intro}</p>
-          <div className="mt-10 grid grid-cols-3 gap-6">
-            {[
-              [profile.languages.length, "languages"],
-              [countries.length, "countries visited"],
-              ["∞", "cups of coffee"],
-            ].map(([n, l]) => (
-              <div key={l} className="border-t border-line pt-3 dark:border-line-dark">
-                <span className="block font-serif text-5xl leading-none">{n}</span>
-                <span className="text-sm text-mute dark:text-mute-dark">{l}</span>
+        <div>
+          <h2 className="reveal text-[clamp(2.4rem,5vw,4rem)] leading-[1.02]">
+            Quiet in meetings.
+            <br />
+            <em className="text-accent dark:text-accent-dark">Loud in commits.</em>
+          </h2>
+          <p className="reveal mt-8 text-lg leading-relaxed sm:text-xl">{profile.intro}</p>
+
+          <dl className="reveal mt-12 border-t border-line dark:border-line-dark">
+            {facts.map((f) => (
+              <div key={f.label} className="grid grid-cols-[6.5rem_1fr] items-baseline gap-4 border-b border-line py-4 sm:grid-cols-[8rem_1fr] dark:border-line-dark">
+                <dt>
+                  <Mono>{f.label}</Mono>
+                </dt>
+                <dd className="text-[15px]">{f.value}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
-
-        <dl className="reveal border-t border-line dark:border-line-dark">
-          {facts.map((f) => (
-            <div key={f.label} className="grid grid-cols-[6.5rem_1fr] items-baseline gap-4 border-b border-line py-4 sm:grid-cols-[8rem_1fr] dark:border-line-dark">
-              <dt>
-                <Mono>{f.label}</Mono>
-              </dt>
-              <dd className="text-[15px]">{f.value}</dd>
-            </div>
-          ))}
-        </dl>
       </div>
     </Section>
   );

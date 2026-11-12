@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { About, Contact, Hero, Journey, Playground, Skills, Travel, Work } from "./components/Sections";
 import { asides, profile } from "./content";
 import { useReveal, useTheme } from "./hooks";
-import face from "./assets/photo-face.webp";
+import photo from "./assets/photo.webp";
 
 const NAV = [
   { href: "#work", label: "Work" },
@@ -35,20 +35,25 @@ function Nav({ dark, toggle }) {
       }`}
     >
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 px-6">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Close navigation" : "Open navigation"}
-            className="grid size-10 place-items-center rounded-full bg-ink font-serif text-xl leading-none text-paper transition-transform active:scale-95 md:hidden dark:bg-chalk dark:text-stage"
+            className="relative -ml-2 grid size-10 place-items-center md:hidden"
           >
-            <span className="flex items-baseline">
-              A
-              <span className={`inline-block text-accent transition-transform duration-300 dark:text-accent-dark ${open ? "rotate-45 scale-125" : ""}`}>
-                {open ? "+" : "."}
-              </span>
+            <span className="relative block h-3 w-6" aria-hidden="true">
+              <span
+                className={`absolute left-0 h-[1.5px] w-6 bg-current transition-all duration-300 ${open ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0"}`}
+              />
+              <span
+                className={`absolute left-0 h-[1.5px] bg-current transition-all duration-300 ${open ? "top-1/2 w-6 -translate-y-1/2 -rotate-45" : "bottom-0 w-4"}`}
+              />
+              <span
+                className={`absolute -bottom-[2px] left-[19px] size-[5px] rounded-full bg-accent transition-opacity duration-200 dark:bg-accent-dark ${open ? "opacity-0" : "opacity-100"}`}
+              />
             </span>
           </button>
           <a href="#top" onClick={() => setOpen(false)} className="font-serif text-xl sm:text-2xl">
@@ -126,7 +131,7 @@ export default function App() {
       <main>
         <Hero />
         <Work />
-        <About face={face} />
+        <About photo={photo} />
         <Journey />
         <Skills />
         <Playground />
