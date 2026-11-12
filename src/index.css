@@ -1,0 +1,181 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Cream (light) */
+  --color-cream: #f4ede4;
+  --color-cream-2: #fbf7f2;
+  --color-ink: #1a1416;
+  --color-muted: #6b5d57;
+  --color-line: #e3d7ca;
+  --color-coral: #d9604c;
+  --color-rose: #e8826b;
+  --color-sand: #e9c7a3;
+  --color-gold: #b38a4a;
+
+  /* Noir & or (dark) */
+  --color-noir: #0e0b0c;
+  --color-noir-2: #18131a;
+  --color-pearl: #f5e6d3;
+  --color-mist: #a8988c;
+  --color-line-dark: #2c2428;
+  --color-coral-light: #f08a7e;
+  --color-gold-light: #d9b779;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-cream text-ink font-sans antialiased transition-colors duration-500;
+    @apply dark:bg-noir dark:text-pearl;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  ::selection {
+    @apply bg-rose text-cream;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-coral);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+/* Sections fade in once, when they enter the screen */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Organic shape that slowly breathes (photo and project frames) */
+@keyframes morph {
+  0%,
+  100% {
+    border-radius: 58% 42% 55% 45% / 45% 55% 45% 55%;
+  }
+  33% {
+    border-radius: 42% 58% 45% 55% / 55% 42% 58% 45%;
+  }
+  66% {
+    border-radius: 52% 48% 38% 62% / 40% 60% 40% 60%;
+  }
+}
+.blob-shape {
+  animation: morph 14s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 38s linear infinite;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Map pins */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* Passport stamp lands on the map */
+@keyframes stamp {
+  0% {
+    transform: scale(2.2) rotate(-28deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.92) rotate(-10deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(-12deg);
+    opacity: 1;
+  }
+}
+.stamp {
+  transform: rotate(-12deg);
+  animation: stamp 0.45s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  background: color-mix(in srgb, var(--color-cream-2) 88%, transparent);
+}
+.dark .stamp {
+  background: color-mix(in srgb, var(--color-noir-2) 88%, transparent);
+}
+:root {
+  --label-halo: var(--color-cream-2);
+}
+.dark {
+  --label-halo: var(--color-noir-2);
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+.caret {
+  animation: caret 1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .blob-shape,
+  .marquee-track,
+  .caret {
+    animation: none;
+  }
+}
+
+/* Custom cursor replaces the system one on desktop */
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none !important;
+}
