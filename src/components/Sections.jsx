@@ -181,26 +181,45 @@ export function Work() {
   );
 }
 
-export function About({ photo }) {
+export function About({ face }) {
+  const mother = profile.languages.filter((l) => l.level.startsWith("mother"));
+  const others = profile.languages.filter((l) => !l.level.startsWith("mother"));
+  const facts = [
+    { label: "From", value: "Constantine, Algeria" },
+    { label: "Based in", value: profile.location },
+    { label: "Studying", value: "Mastère Dev Manager Full Stack, EFREI Paris" },
+    {
+      label: "Speaks",
+      value: `${mother.map((l) => l.name).join(" and ")} (mother tongues), ${others.map((l) => `${l.name} (${l.level})`).join(", ")}`,
+    },
+    { label: "Looking for", value: "An alternating internship, Nov 2026 to June 2027" },
+    { label: "Off screen", value: profile.interests.join(", ") },
+  ];
+
   return (
     <Section id="about" label="About" right="Constantine → Paris">
-      <div className="grid items-start gap-12 md:grid-cols-[15rem_1fr] md:gap-16">
-        <figure className="reveal group max-w-[15rem]">
+      <h2 className="reveal text-[clamp(2.6rem,8vw,6rem)] leading-[1.02]">
+        Quiet in meetings.
+        <br />
+        Loud in{" "}
+        <span className="group relative inline-block align-middle">
           <img
-            src={photo}
+            src={face}
             alt={`Portrait of ${profile.firstName} ${profile.lastName}`}
-            className="aspect-[4/5] w-full rounded-md object-cover transition-[filter] duration-700 group-hover:grayscale-0 [@media(hover:hover)]:grayscale"
+            className="inline-block h-[0.82em] w-[1.1em] rounded-full object-cover ring-1 ring-line dark:ring-line-dark transition-[filter,transform] duration-700 group-hover:scale-105 group-hover:grayscale-0 [@media(hover:hover)]:grayscale"
           />
-          <figcaption className="mt-3">
-            <Mono className="hidden [@media(hover:hover)]:inline">{asides.photo}</Mono>
-            <Mono className="[@media(hover:hover)]:hidden">{asides.photoTouch}</Mono>
-          </figcaption>
-        </figure>
-        <div>
-          <h2 className="reveal text-[clamp(2.2rem,4.6vw,3.4rem)]">{asides.about}</h2>
-          <p className="reveal mt-6 max-w-2xl text-lg text-mute dark:text-mute-dark">{profile.intro}</p>
+        </span>{" "}
+        commits.
+      </h2>
+      <p className="reveal mt-4">
+        <Mono className="hidden [@media(hover:hover)]:inline">↑ {asides.photo}</Mono>
+        <Mono className="[@media(hover:hover)]:hidden">↑ {asides.photoTouch}</Mono>
+      </p>
 
-          <div className="reveal mt-10 grid grid-cols-3 gap-6">
+      <div className="mt-16 grid gap-14 md:grid-cols-[1fr_1.1fr] md:gap-16">
+        <div className="reveal">
+          <p className="text-xl leading-relaxed">{profile.intro}</p>
+          <div className="mt-10 grid grid-cols-3 gap-6">
             {[
               [profile.languages.length, "languages"],
               [countries.length, "countries visited"],
@@ -212,20 +231,18 @@ export function About({ photo }) {
               </div>
             ))}
           </div>
-
-          <dl className="reveal mt-10 grid grid-cols-2 gap-x-6 gap-y-4 lg:grid-cols-4">
-            {profile.languages.map((l) => (
-              <div key={l.name}>
-                <dt className="text-[15px]">{l.name}</dt>
-                <dd className="text-sm text-mute dark:text-mute-dark">{l.level}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <p className="reveal mt-10 text-[15px] text-mute dark:text-mute-dark">
-            <span className="text-ink dark:text-chalk">Off screen:</span> {profile.interests.join(", ")}.
-          </p>
         </div>
+
+        <dl className="reveal border-t border-line dark:border-line-dark">
+          {facts.map((f) => (
+            <div key={f.label} className="grid grid-cols-[6.5rem_1fr] items-baseline gap-4 border-b border-line py-4 sm:grid-cols-[8rem_1fr] dark:border-line-dark">
+              <dt>
+                <Mono>{f.label}</Mono>
+              </dt>
+              <dd className="text-[15px]">{f.value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </Section>
   );

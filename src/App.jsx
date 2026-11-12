@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { About, Contact, Hero, Journey, Playground, Skills, Travel, Work } from "./components/Sections";
 import { asides, profile } from "./content";
 import { useReveal, useTheme } from "./hooks";
-import photo from "./assets/photo.webp";
+import face from "./assets/photo-face.webp";
 
 const NAV = [
   { href: "#work", label: "Work" },
@@ -35,9 +35,26 @@ function Nav({ dark, toggle }) {
       }`}
     >
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 px-6">
-        <a href="#top" onClick={() => setOpen(false)} className="font-serif text-xl sm:text-2xl">
-          {profile.firstName} {profile.lastName}
-        </a>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            className="grid size-10 place-items-center rounded-full bg-ink font-serif text-xl leading-none text-paper transition-transform active:scale-95 md:hidden dark:bg-chalk dark:text-stage"
+          >
+            <span className="flex items-baseline">
+              A
+              <span className={`inline-block text-accent transition-transform duration-300 dark:text-accent-dark ${open ? "rotate-45 scale-125" : ""}`}>
+                {open ? "+" : "."}
+              </span>
+            </span>
+          </button>
+          <a href="#top" onClick={() => setOpen(false)} className="font-serif text-xl sm:text-2xl">
+            {profile.firstName} {profile.lastName}
+          </a>
+        </div>
         <nav className="flex items-center gap-3 sm:gap-7">
           <ul className="hidden items-center gap-7 text-sm md:flex">
             {NAV.map((n) => (
@@ -55,15 +72,6 @@ function Nav({ dark, toggle }) {
             className="rounded-full border border-line px-3 py-1.5 font-mono text-xs transition-colors hover:border-current dark:border-line-dark"
           >
             {dark ? "lights on" : "lights off"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            className="font-mono text-xs underline underline-offset-4 md:hidden"
-          >
-            {open ? "close" : "menu"}
           </button>
         </nav>
       </div>
@@ -84,7 +92,7 @@ function Nav({ dark, toggle }) {
             </li>
           ))}
         </ul>
-        <p className="mt-8 font-mono text-xs text-mute dark:text-mute-dark">short menu. like my attention span before coffee.</p>
+        <p className="mt-8 font-mono text-xs text-mute dark:text-mute-dark">short list. like my attention span before coffee.</p>
       </div>
     </header>
   );
@@ -118,7 +126,7 @@ export default function App() {
       <main>
         <Hero />
         <Work />
-        <About photo={photo} />
+        <About face={face} />
         <Journey />
         <Skills />
         <Playground />
