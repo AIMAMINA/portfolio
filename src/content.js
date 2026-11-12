@@ -12,7 +12,7 @@ export const profile = {
   availability: "Looking for an alternating internship from November 2026 to June 2027 (1 week at school, 2 weeks in the company)",
   punchline: "I think big, code clean, and build what's next.",
   intro:
-    "I started with data and AI in Algeria, got hooked on building the whole product around them (the interface, the API and the model), and moved to Paris to level up at EFREI. I speak four languages. Five, if you count Python 🐍",
+    "I started with data and AI in Algeria, got hooked on building the whole product around them (the interface, the API and the model), and moved to Paris to level up at EFREI. I speak four languages. Five, if you count Python.",
   email: "amina.aimeur@efrei.net",
   linkedin: "https://www.linkedin.com/in/amina-aimeur-2223ab25b/",
   github: "https://github.com/AIMAMINA",
@@ -24,7 +24,7 @@ export const profile = {
     { name: "English", level: "professional" },
     { name: "Spanish", level: "basics" },
   ],
-  interests: ["collecting passport stamps ✈️", "taking way too many photos 📸", "a daily walk (the best debugging tool ever)"],
+  interests: ["collecting passport stamps", "taking way too many photos", "a daily walk (the best debugging tool ever)"],
 };
 
 export const projects = [
@@ -41,7 +41,7 @@ export const projects = [
     stack: ["React", "Tailwind CSS", "Django REST", "TensorFlow", "JWT"],
     images: [elhakimHome, elhakimScan],
     code: "https://github.com/AIMAMINA/pneumonia-detection",
-    accent: "coral",
+    joke: "the model works. I checked. twice.",
   },
   {
     name: "LearnU",
@@ -56,7 +56,7 @@ export const projects = [
     stack: ["Spring Boot", "Spring Cloud Gateway", "Django", "GraphQL", "React", "Docker"],
     images: [learnuStudents, learnuDashboard],
     code: "https://github.com/AIMAMINA/learnu-microservices",
-    accent: "gold",
+    joke: "eight services, zero drama.",
   },
 ];
 
@@ -107,13 +107,31 @@ export const experience = [
   },
 ];
 
-export const marquee = ["React", "Spring Boot", "Django", "TensorFlow", "GraphQL", "Docker", "PostgreSQL", "Microservices", "Hugging Face"];
+// Quick one-liners, typed one after the other under the hero title
+export const jokes = [
+  "My code has no bugs. Only surprise features.",
+  "Introvert, but my GitHub talks a lot.",
+  "I don't need sleep. I need a merge.",
+  "It works on my machine. And now on yours too.",
+];
+
+// Short asides shown next to some sections
+export const asides = {
+  photo: "hover me. I don't bite.",
+  about: "Quiet in meetings. Loud in commits.",
+  path: "the short version. the long one needs more coffee.",
+  skills: "sorted, unlike my desktop.",
+  terminal: "Recruiters read CVs. Developers type commands.",
+  travel: "my suitcase deserves a raise.",
+  contact: "I reply faster than my code compiles.",
+  footer: "no templates were harmed",
+};
 
 // Trips shown on the travel map: one pin per country (coords = [longitude, latitude]).
 // `label` nudges the name so that labels do not overlap; `note` is optional.
 export const trips = [
-  { country: "Algeria", city: "Constantine", coords: [6.61, 36.37], note: "home 🏡", label: { dx: -2, dy: 22, anchor: "middle" } },
-  { country: "France", city: "Paris", coords: [2.35, 48.86], note: "now 📍", label: { dx: -9, dy: 4, anchor: "end" } },
+  { country: "Algeria", city: "Constantine", coords: [6.61, 36.37], note: "home", label: { dx: -2, dy: 22, anchor: "middle" } },
+  { country: "France", city: "Paris", coords: [2.35, 48.86], note: "now", label: { dx: -9, dy: 4, anchor: "end" } },
   { country: "Spain", city: "Andalusia", coords: [-4.42, 37.39], label: { dx: -9, dy: -6, anchor: "end" } },
   { country: "Morocco", city: "Rabat", coords: [-6.84, 34.02], label: { dx: -9, dy: 12, anchor: "end" } },
   { country: "United Kingdom", city: "London", coords: [-0.13, 51.51], label: { dx: -9, dy: -4, anchor: "end" } },
@@ -126,11 +144,3 @@ export const trips = [
   { country: "Lebanon", city: "Beirut", coords: [35.5, 33.89], label: { dx: 9, dy: 4 } },
 ];
 export const countries = trips.map((t) => t.country);
-
-// Hello in the four languages, cycled in the hero
-export const greetings = [
-  { text: "hello, world", lang: "en" },
-  { text: "bonjour, le monde", lang: "fr" },
-  { text: "مرحبا بالعالم", lang: "ar", dir: "rtl" },
-  { text: "hola, mundo", lang: "es" },
-];

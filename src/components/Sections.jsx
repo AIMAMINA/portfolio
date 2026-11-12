@@ -1,321 +1,295 @@
-import { useEffect, useRef, useState } from "react";
-import LiquidCanvas from "./LiquidCanvas";
+import { useEffect, useState } from "react";
 import Terminal from "./Terminal";
-import TravelMap, { Stamp } from "./TravelMap";
-import { useTypewriter } from "../hooks";
-import { countries, trips, experience, greetings, journey, marquee, moreProjects, profile, projects, skills } from "../content";
+import TravelMap from "./TravelMap";
+import { asides, countries, experience, jokes, journey, moreProjects, profile, projects, skills, trips } from "../content";
 
-const WORDS = ["things", "interfaces", "APIs", "AI tools"];
+const pad = (n) => String(n).padStart(2, "0");
 
-function Label({ children }) {
-  return <p className="font-mono text-sm text-coral dark:text-coral-light">{children}</p>;
+/** Small grey monospace text: labels, numbers, asides. */
+function Mono({ children, className = "" }) {
+  return <span className={`font-mono text-xs tracking-wide text-mute dark:text-mute-dark ${className}`}>{children}</span>;
 }
 
-function Greeting() {
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = setInterval(() => setI((n) => (n + 1) % greetings.length), 2600);
-    return () => clearInterval(id);
-  }, []);
-  const g = greetings[i];
+/** Section wrapper: thin top rule, label on the left, counter or aside on the right. */
+function Section({ id, label, right, children, className = "" }) {
   return (
-    <span key={i} lang={g.lang} dir={g.dir} className="inline-block animate-[fadeUp_0.6s_ease-out]">
-      {g.text}
-    </span>
-  );
-}
-
-export function Hero({ dark }) {
-  const word = useTypewriter(WORDS);
-  return (
-    <section id="top" className="relative flex min-h-[100svh] items-center overflow-hidden">
-      <LiquidCanvas dark={dark} />
-      <div className="relative mx-auto w-full max-w-6xl px-6 pt-28 pb-20">
-        <p className="font-mono text-sm text-muted dark:text-mist">
-          <Greeting /> <span dir="ltr">— I'm {profile.firstName} {profile.lastName} 👋</span>
-        </p>
-        <h1 className="mt-5 max-w-4xl text-[clamp(3.4rem,10vw,8.5rem)]">
-          I build{" "}
-          <em className="text-coral dark:text-coral-light">
-            {word}
-            <span className="caret ml-1 inline-block w-[0.06em] translate-y-[0.08em] bg-current" style={{ height: "0.8em" }} aria-hidden="true" />
-          </em>
-          <br />
-          that feel alive.
-        </h1>
-        <p className="mt-8 max-w-xl text-lg text-muted dark:text-mist">
-          {profile.role}, {profile.status.replace("Master's", "master's")} and part-time bug hunter 🐛. Looking for an alternating internship from November 2026.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center gap-4">
-          <a
-            href="#work"
-            className="rounded-full bg-ink px-7 py-3.5 font-medium text-cream transition-colors hover:bg-coral dark:bg-pearl dark:text-noir dark:hover:bg-coral-light"
-          >
-            See my work
-          </a>
-          <a
-            href={profile.cv}
-            download
-            className="rounded-full border border-ink/25 px-7 py-3.5 font-medium transition-colors hover:border-coral hover:text-coral dark:border-pearl/30 dark:hover:border-coral-light dark:hover:text-coral-light"
-          >
-            Download my CV
-          </a>
+    <section id={id} className={`border-t border-line py-24 md:py-32 dark:border-line-dark ${className}`}>
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="reveal mb-12 flex items-baseline justify-between gap-6">
+          <Mono>{label}</Mono>
+          {right && <Mono className="text-right">{right}</Mono>}
         </div>
+        {children}
       </div>
     </section>
   );
 }
 
-export function Marquee() {
-  const items = [...marquee, ...marquee];
+/** Types each one-liner, keeps it on screen for a moment, then moves to the next. */
+function OneLiner() {
+  const [reduced] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const [text, setText] = useState(reduced ? jokes[0] : "");
+  useEffect(() => {
+    if (reduced) return;
+    let j = 0;
+    let i = 0;
+    let timer;
+    const tick = () => {
+      const joke = jokes[j % jokes.length];
+      if (i <= joke.length) {
+        setText(joke.slice(0, i++));
+        timer = setTimeout(tick, 28);
+      } else {
+        i = 0;
+        j++;
+        timer = setTimeout(tick, 3400);
+      }
+    };
+    timer = setTimeout(tick, 900);
+    return () => clearTimeout(timer);
+  }, [reduced]);
   return (
-    <div className="overflow-hidden border-y border-line py-5 dark:border-line-dark" aria-hidden="true">
-      <div className="marquee-track flex w-max gap-12 whitespace-nowrap">
-        {items.map((m, i) => (
-          <span key={i} className="flex items-center gap-12 font-display text-3xl italic text-muted dark:text-mist">
-            {m}
-            <span className="text-base text-coral not-italic dark:text-gold-light">✦</span>
-          </span>
-        ))}
-      </div>
-    </div>
+    <p className="mt-8 min-h-[1.6em] border-l-2 border-accent pl-3 font-mono text-[13px] text-mute dark:border-accent-dark dark:text-mute-dark" aria-live="off">
+      {text}
+      <span className="caret ml-0.5 inline-block h-[1em] w-[0.5ch] translate-y-[0.15em] bg-current opacity-60" aria-hidden="true" />
+    </p>
   );
 }
 
-function TiltImages({ images, name, accent }) {
-  const ref = useRef(null);
-  const onMove = (e) => {
-    const r = ref.current.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    ref.current.style.transform = `perspective(1000px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg)`;
-  };
-  const reset = () => (ref.current.style.transform = "");
-  const blob = accent === "gold" ? "bg-sand dark:bg-gold/50" : "bg-rose/70 dark:bg-coral-light/40";
-
+export function Hero() {
   return (
-    <div className="relative" onPointerMove={onMove} onPointerLeave={reset} data-cursor>
-      <div className={`blob-shape absolute -inset-6 -z-0 ${blob}`} aria-hidden="true" />
-      <div ref={ref} className="relative transition-transform duration-300 ease-out" style={{ transformStyle: "preserve-3d" }}>
-        <img
-          src={images[0]}
-          alt={`${name}: main screen`}
-          loading="lazy"
-          className="w-full rounded-xl shadow-[0_30px_60px_-25px_rgba(26,20,22,0.45)] ring-1 ring-ink/10"
-        />
-        <img
-          src={images[1]}
-          alt={`${name}: second screen`}
-          loading="lazy"
-          className="absolute -right-4 -bottom-10 hidden w-1/2 rounded-lg shadow-[0_24px_48px_-20px_rgba(26,20,22,0.5)] ring-1 ring-ink/10 sm:block"
-          style={{ transform: "translateZ(40px)" }}
-        />
+    <header id="top" className="mx-auto flex min-h-[88svh] max-w-5xl flex-col justify-center px-6 pt-32 pb-20">
+      <Mono className="reveal">Full-stack &amp; AI developer · {profile.location.split(",")[0]}</Mono>
+      <h1 className="reveal mt-5 text-[clamp(3.2rem,9vw,7.25rem)] leading-[0.98]">
+        I think big,
+        <br />
+        code clean, and
+        <br />
+        build <em className="text-accent dark:text-accent-dark">what&apos;s next.</em>
+      </h1>
+      <p className="reveal mt-8 max-w-xl text-lg text-mute dark:text-mute-dark">
+        {profile.status}. <span className="text-ink dark:text-chalk">{profile.availability.split(" (")[0]}</span>, one week at school and two in the company.
+      </p>
+      <div className="reveal">
+        <OneLiner />
       </div>
-    </div>
+      <div className="reveal mt-10 flex flex-wrap items-center gap-6 text-[15px]">
+        <a href="#work" className="rounded-full bg-ink px-6 py-3 text-paper transition-transform hover:-translate-y-0.5 dark:bg-chalk dark:text-stage">
+          See my work
+        </a>
+        <a href={profile.cv} download className="border-b border-current pb-0.5 transition-colors hover:text-accent dark:hover:text-accent-dark">
+          Download my CV
+        </a>
+      </div>
+    </header>
+  );
+}
+
+function ProjectRow({ project, index }) {
+  const [open, setOpen] = useState(index === 0);
+  const id = `project-${index}`;
+  return (
+    <article className="reveal border-b border-line dark:border-line-dark">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={id}
+        className="group relative grid w-full grid-cols-[2.5rem_1fr_auto] items-baseline gap-4 py-7 text-left md:grid-cols-[4rem_1fr_auto]"
+      >
+        <Mono>{pad(index + 1)}</Mono>
+        <span>
+          <span className="block font-serif text-[clamp(2rem,4.6vw,3.25rem)] leading-[1.05] transition-transform duration-500 group-hover:translate-x-2">
+            {project.name}
+          </span>
+          <span className="mt-1 block text-[15px] text-mute dark:text-mute-dark">{project.tagline}</span>
+        </span>
+        <span
+          className={`text-2xl text-mute transition-all duration-500 group-hover:text-accent dark:text-mute-dark dark:group-hover:text-accent-dark ${open ? "rotate-90" : "group-hover:-rotate-45"}`}
+          aria-hidden="true"
+        >
+          →
+        </span>
+        <span className="pointer-events-none absolute top-8 right-12 hidden translate-y-1 font-mono text-xs text-accent opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 md:block dark:text-accent-dark">
+          {project.joke}
+        </span>
+      </button>
+
+      <div id={id} className={`grid transition-[grid-template-rows] duration-500 ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+        <div className="overflow-hidden">
+          <div className="grid gap-10 pb-12 md:grid-cols-[4rem_1fr] md:gap-4">
+            <span />
+            <div>
+              <p className="max-w-2xl text-lg">{project.summary}</p>
+              <ul className="mt-6 max-w-2xl space-y-2 text-[15px] text-mute dark:text-mute-dark">
+                {project.highlights.map((h) => (
+                  <li key={h} className="flex gap-3">
+                    <span className="text-accent dark:text-accent-dark">—</span>
+                    {h}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                {project.images.map((src, i) => (
+                  <div key={src} className="overflow-hidden rounded-md border border-line dark:border-line-dark">
+                    <img
+                      src={src}
+                      alt={`${project.name}, screen ${i + 1}`}
+                      loading="lazy"
+                      className="aspect-[16/10] w-full object-cover object-top grayscale transition-all duration-700 hover:scale-[1.03] hover:grayscale-0"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 flex flex-wrap items-baseline justify-between gap-4">
+                <Mono>{project.stack.join(" / ")}</Mono>
+                <a href={project.code} target="_blank" rel="noreferrer" className="border-b border-current pb-0.5 text-[15px] transition-colors hover:text-accent dark:hover:text-accent-dark">
+                  View the code
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }
 
 export function Work() {
   return (
-    <section id="work" className="mx-auto max-w-6xl px-6 py-28 md:py-36">
-      <div className="reveal">
-        <Label>selected work</Label>
-        <h2 className="mt-3 text-6xl md:text-7xl">
-          Things I've <em className="text-coral dark:text-coral-light">built</em>
-        </h2>
-        <p className="mt-4 font-mono text-sm text-muted dark:text-mist">(and debugged at 2 a.m. ☕)</p>
-      </div>
-
-      <div className="mt-20 space-y-32 md:space-y-40">
+    <Section id="work" label="Selected work" right={pad(projects.length)}>
+      <div className="border-t border-line dark:border-line-dark">
         {projects.map((p, i) => (
-          <article key={p.name} className="reveal grid items-center gap-14 md:grid-cols-[1.15fr_1fr] md:gap-20">
-            <div className={i % 2 ? "md:order-2" : ""}>
-              <TiltImages images={p.images} name={p.name} accent={p.accent} />
-            </div>
-            <div>
-              <h3 className="text-5xl md:text-6xl">{p.name}</h3>
-              <p className="mt-2 font-display text-2xl italic text-coral dark:text-coral-light">{p.tagline}</p>
-              <p className="mt-6 text-muted dark:text-mist">{p.summary}</p>
-              <ul className="mt-6 space-y-2">
-                {p.highlights.map((h) => (
-                  <li key={h} className="flex gap-3">
-                    <span className="mt-[0.6em] size-1.5 shrink-0 rounded-full bg-gold dark:bg-gold-light" />
-                    <span>{h}</span>
-                  </li>
-                ))}
-              </ul>
-              <ul className="mt-7 flex flex-wrap gap-2" aria-label="Technologies">
-                {p.stack.map((s) => (
-                  <li key={s} className="rounded-full border border-line px-3 py-1 font-mono text-xs text-muted dark:border-line-dark dark:text-mist">
-                    {s}
-                  </li>
-                ))}
-              </ul>
-              <a
-                href={p.code}
-                target="_blank"
-                rel="noreferrer"
-                className="group mt-8 inline-flex items-center gap-2 font-medium text-ink dark:text-pearl"
-              >
-                <span className="border-b border-current pb-0.5 transition-colors group-hover:text-coral dark:group-hover:text-coral-light">
-                  View the code on GitHub
-                </span>
-                <svg className="size-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </a>
-            </div>
-          </article>
+          <ProjectRow key={p.name} project={p} index={i} />
         ))}
       </div>
 
-      <div className="reveal mt-32">
-        <h3 className="text-4xl">Also built</h3>
-        <ul className="mt-8 divide-y divide-line border-y border-line dark:divide-line-dark dark:border-line-dark">
+      <div className="reveal mt-20">
+        <Mono>Also built</Mono>
+        <ul className="mt-6">
           {moreProjects.map((p) => (
-            <li key={p.name} className="group grid gap-2 py-6 transition-colors md:grid-cols-[minmax(0,19rem)_minmax(0,1fr)_minmax(0,16rem)] md:items-center md:gap-10">
-              <p className="font-display text-2xl transition-colors group-hover:text-coral dark:group-hover:text-coral-light">{p.name}</p>
-              <p className="text-muted dark:text-mist">{p.text}</p>
-              <ul className="flex flex-wrap gap-1.5 md:justify-end" aria-label="Technologies">
-                {p.stack.map((t) => (
-                  <li key={t} className="rounded-full border border-line px-2.5 py-0.5 font-mono text-[11px] text-muted dark:border-line-dark dark:text-mist">
-                    {t}
-                  </li>
-                ))}
-              </ul>
+            <li key={p.name} className="grid gap-1 border-b border-line py-5 md:grid-cols-[16rem_1fr_auto] md:gap-6 dark:border-line-dark">
+              <span className="font-serif text-2xl leading-tight">{p.name}</span>
+              <span className="text-[15px] text-mute dark:text-mute-dark">{p.text}</span>
+              <Mono className="md:text-right">{p.stack.join(" / ")}</Mono>
             </li>
           ))}
         </ul>
       </div>
-    </section>
-  );
-}
-
-function Timeline({ items }) {
-  return (
-    <ol className="space-y-6 border-l border-line pl-6 dark:border-line-dark">
-      {items.map((j) => (
-        <li key={j.title} className="relative">
-          <span className="absolute top-2 -left-[29px] size-2.5 rounded-full bg-coral dark:bg-coral-light" />
-          <p className="font-mono text-xs text-muted dark:text-mist">{j.period}</p>
-          <p className="font-medium">{j.title}</p>
-          <p className="text-sm text-muted dark:text-mist">{j.place}</p>
-          {j.text && <p className="mt-1 text-sm">{j.text}</p>}
-        </li>
-      ))}
-    </ol>
+    </Section>
   );
 }
 
 export function About({ photo }) {
   return (
-    <section id="about" className="relative overflow-hidden bg-cream-2 py-28 md:py-36 dark:bg-noir-2">
-      <div className="relative mx-auto grid max-w-6xl items-center gap-16 px-6 md:grid-cols-[0.9fr_1.1fr]">
-        <div className="reveal relative mx-auto w-full max-w-sm">
-          <div className="blob-shape absolute -inset-5 bg-sand dark:bg-gold/40" aria-hidden="true" />
-          <div className="blob-shape relative aspect-square overflow-hidden bg-rose dark:bg-coral-light/70" style={{ animationDelay: "-5s" }}>
-            {photo ? (
-              <img src={photo} alt={`Portrait of ${profile.firstName} ${profile.lastName}`} className="h-full w-full object-cover" />
-            ) : (
-              <span className="flex h-full items-center justify-center font-display text-8xl italic text-cream">
-                {profile.firstName[0]}
-                {profile.lastName[0]}
-              </span>
-            )}
+    <Section id="about" label="About" right="Constantine → Paris">
+      <div className="grid items-start gap-12 md:grid-cols-[15rem_1fr] md:gap-16">
+        <figure className="reveal group max-w-[15rem]">
+          <img
+            src={photo}
+            alt={`Portrait of ${profile.firstName} ${profile.lastName}`}
+            className="aspect-[4/5] w-full rounded-md object-cover grayscale transition-[filter] duration-700 group-hover:grayscale-0"
+          />
+          <figcaption className="mt-3">
+            <Mono>{asides.photo}</Mono>
+          </figcaption>
+        </figure>
+        <div>
+          <h2 className="reveal text-[clamp(2.2rem,4.6vw,3.4rem)]">{asides.about}</h2>
+          <p className="reveal mt-6 max-w-2xl text-lg text-mute dark:text-mute-dark">{profile.intro}</p>
+
+          <div className="reveal mt-10 grid grid-cols-3 gap-6">
+            {[
+              [profile.languages.length, "languages"],
+              [countries.length, "countries visited"],
+              ["∞", "cups of coffee"],
+            ].map(([n, l]) => (
+              <div key={l} className="border-t border-line pt-3 dark:border-line-dark">
+                <span className="block font-serif text-5xl leading-none">{n}</span>
+                <span className="text-sm text-mute dark:text-mute-dark">{l}</span>
+              </div>
+            ))}
           </div>
-        </div>
-        <div className="reveal">
-          <Label>about me</Label>
-          <h2 className="mt-3 text-5xl md:text-6xl">
-            I think big, code clean, and build <em className="text-coral dark:text-coral-light">what's next.</em>
-          </h2>
-          <p className="mt-8 text-xl leading-relaxed">{profile.intro}</p>
-          <p className="mt-5 text-muted dark:text-mist">{profile.availability}. Based in {profile.location}.</p>
-          <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-4">
+
+          <dl className="reveal mt-10 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
             {profile.languages.map((l) => (
               <div key={l.name}>
-                <dt className="font-medium">{l.name}</dt>
-                <dd className="text-muted dark:text-mist">{l.level}</dd>
+                <dt className="text-[15px]">{l.name}</dt>
+                <dd className="text-sm text-mute dark:text-mute-dark">{l.level}</dd>
               </div>
             ))}
           </dl>
-          <p className="mt-6 text-sm text-muted dark:text-mist">Off screen: {profile.interests.join(", ")}.</p>
+
+          <p className="reveal mt-10 text-[15px] text-mute dark:text-mute-dark">
+            <span className="text-ink dark:text-chalk">Off screen:</span> {profile.interests.join(", ")}.
+          </p>
         </div>
       </div>
-    </section>
+    </Section>
+  );
+}
+
+function Timeline({ title, items }) {
+  return (
+    <div className="reveal">
+      <Mono>{title}</Mono>
+      <ol className="mt-5">
+        {items.map((it) => (
+          <li key={it.title + it.period} className="grid gap-1 border-b border-line py-5 sm:grid-cols-[9rem_1fr] sm:gap-6 dark:border-line-dark">
+            <Mono className="pt-1">{it.period}</Mono>
+            <div>
+              <h3 className="text-2xl leading-tight">{it.title}</h3>
+              <p className="mt-1 text-[15px] text-mute dark:text-mute-dark">{it.place}</p>
+              {it.text && <p className="mt-2 text-[15px] text-mute dark:text-mute-dark">{it.text}</p>}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 
 export function Journey() {
   return (
-    <section id="journey" className="mx-auto max-w-6xl px-6 pt-28 md:pt-36">
-      <div className="reveal">
-        <Label>path</Label>
-        <h2 className="mt-3 text-6xl md:text-7xl">
-          Where I've <em className="text-coral dark:text-coral-light">been</em>
-        </h2>
+    <Section id="path" label="Path" right={asides.path}>
+      <div className="grid gap-16 lg:grid-cols-2 lg:gap-12">
+        <Timeline title="Education" items={journey} />
+        <Timeline title="Experience" items={experience} />
       </div>
-      <div className="mt-14 grid gap-14 md:grid-cols-2">
-        <div className="reveal">
-          <h3 className="mb-8 text-3xl">Education</h3>
-          <Timeline items={journey} />
-        </div>
-        <div className="reveal">
-          <h3 className="mb-8 text-3xl">Experience</h3>
-          <Timeline items={experience} />
-        </div>
-      </div>
-    </section>
+    </Section>
   );
 }
 
 export function Skills() {
   return (
-    <section id="skills" className="mx-auto max-w-6xl px-6 py-28 md:py-36">
-      <div className="reveal">
-        <Label>toolbox</Label>
-        <h2 className="mt-3 text-6xl md:text-7xl">
-          What I work <em className="text-coral dark:text-coral-light">with</em>
-        </h2>
-      </div>
-      <div className="mt-16 grid gap-x-10 gap-y-12 sm:grid-cols-2">
+    <Section id="skills" label="Skills" right={asides.skills}>
+      <div className="grid gap-x-12 gap-y-10 sm:grid-cols-2">
         {skills.map((s) => (
-          <div key={s.group} className="reveal border-t border-ink/80 pt-5 dark:border-pearl/60">
-            <h3 className="text-3xl">{s.group}</h3>
-            <ul className="mt-5 flex flex-wrap gap-2.5">
-              {s.items.map((item) => (
-                <li
-                  key={item}
-                  className="rounded-full bg-cream-2 px-4 py-2 text-sm ring-1 ring-line transition-all duration-300 hover:-translate-y-0.5 hover:bg-rose hover:text-cream hover:ring-rose dark:bg-noir-2 dark:ring-line-dark dark:hover:bg-coral-light dark:hover:text-noir"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
+          <div key={s.group} className="reveal border-t border-line pt-4 dark:border-line-dark">
+            <h3 className="text-2xl">{s.group}</h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-mute dark:text-mute-dark">{s.items.join(" · ")}</p>
           </div>
         ))}
       </div>
-    </section>
+    </Section>
   );
 }
 
 export function Playground() {
   return (
-    <section id="terminal" className="mx-auto max-w-6xl px-6 pb-28 md:pb-36">
-      <div className="reveal grid items-center gap-12 md:grid-cols-[0.8fr_1.2fr]">
-        <div>
-          <Label>playground</Label>
-          <h2 className="mt-3 text-6xl md:text-7xl">
-            Talk to my <em className="text-coral dark:text-coral-light">terminal</em>
-          </h2>
-          <p className="mt-6 text-muted dark:text-mist">
-            Recruiters read CVs. Developers type commands. Try <code className="font-mono text-coral dark:text-coral-light">help</code>, and maybe find a secret or two 🤫
+    <Section id="terminal" label="Terminal" right="try: help">
+      <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.4fr]">
+        <div className="reveal">
+          <h2 className="text-[clamp(2.2rem,4.6vw,3.4rem)]">{asides.terminal}</h2>
+          <p className="mt-5 max-w-sm text-[15px] text-mute dark:text-mute-dark">
+            Type <code className="font-mono text-ink dark:text-chalk">help</code> to look around. There are a couple of hidden commands, if you are the curious type.
           </p>
         </div>
-        <Terminal />
+        <div className="reveal">
+          <Terminal />
+        </div>
       </div>
-    </section>
+    </Section>
   );
 }
 
@@ -323,79 +297,72 @@ export function Travel() {
   const [active, setActive] = useState(null);
   const trip = trips.find((t) => t.country === active);
   return (
-    <section id="travel" className="mx-auto max-w-6xl px-6 pb-28 md:pb-36">
-      <div className="reveal grid items-center gap-12 md:grid-cols-[0.85fr_1.15fr]">
-        <div>
-          <Label>off screen</Label>
-          <h2 className="mt-3 text-6xl md:text-7xl">
-            Debugging the <em className="text-coral dark:text-coral-light">world</em>
+    <Section id="travel" label="Travel" right={asides.travel}>
+      <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.6fr]">
+        <div className="reveal">
+          <h2 className="text-[clamp(2.2rem,4.6vw,3.4rem)]">
+            {countries.length} countries,
+            <br />
+            and counting.
           </h2>
-          <p className="mt-6 text-muted dark:text-mist">
-            When I'm not coding, I'm collecting passport stamps and way too many photos. New places taught me what code does too: adapt fast, look closely.
+          <p className="mt-5 max-w-sm text-[15px] text-mute dark:text-mute-dark">
+            New places taught me what code does too: adapt fast and look closely. Click a country on the map.
           </p>
-          <p className="mt-8 font-display text-4xl">
-            <em className="text-coral dark:text-coral-light">{countries.length}</em> stamps and counting ✈️
-          </p>
-          <p className="mt-2 font-mono text-sm text-muted dark:text-mist">click a country to collect its stamp</p>
-          <div className="mt-8" aria-live="polite">
-            <Stamp trip={trip} onClose={() => setActive(null)} />
+          <div className="mt-8 min-h-[4.5rem] border-l-2 border-accent pl-4 dark:border-accent-dark" aria-live="polite">
+            {trip ? (
+              <>
+                <span className="block font-serif text-3xl leading-tight">{trip.country}</span>
+                <Mono>
+                  {trip.city}
+                  {trip.note ? ` · ${trip.note}` : ""}
+                </Mono>
+              </>
+            ) : (
+              <Mono>nothing selected yet</Mono>
+            )}
           </div>
         </div>
-        <div className="mx-auto w-full max-w-xl rounded-3xl bg-cream-2 p-4 ring-1 ring-line md:p-6 dark:bg-noir-2 dark:ring-line-dark">
+        <div className="reveal">
           <TravelMap active={active} setActive={setActive} />
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
 
 export function Contact() {
-  const copy = async (e) => {
-    const btn = e.currentTarget;
-    try {
-      await navigator.clipboard.writeText(profile.email);
-      btn.dataset.copied = "true";
-      setTimeout(() => delete btn.dataset.copied, 1800);
-    } catch {
-      window.location.href = `mailto:${profile.email}`;
-    }
-  };
-
+  const links = [
+    { href: `mailto:${profile.email}`, label: profile.email },
+    { href: profile.linkedin, label: "LinkedIn" },
+    { href: profile.github, label: "GitHub" },
+    { href: profile.cv, label: "CV (PDF)", download: true },
+  ];
   return (
-    <section id="contact" className="relative overflow-hidden bg-ink py-32 text-cream md:py-40 dark:bg-noir-2">
-      <div className="blob-shape absolute -top-24 -right-24 size-96 bg-coral/50 blur-3xl" aria-hidden="true" />
-      <div className="blob-shape absolute -bottom-32 -left-20 size-80 bg-gold/40 blur-3xl" style={{ animationDelay: "-7s" }} aria-hidden="true" />
-      <div className="reveal relative mx-auto max-w-6xl px-6">
-        <p className="font-mono text-sm text-sand">let's talk</p>
-        <h2 className="mt-4 max-w-4xl text-[clamp(3rem,8vw,6.5rem)] text-cream">
-          Let's build something people <em className="text-rose">love</em> to use.
-        </h2>
-        <p className="mt-6 text-lg text-sand">I reply faster than my code compiles ⚡</p>
-        <div className="mt-12 flex flex-wrap items-center gap-4">
-          <a href={`mailto:${profile.email}`} className="rounded-full bg-cream px-7 py-3.5 font-medium text-ink transition-colors hover:bg-rose hover:text-cream">
-            {profile.email}
-          </a>
-          <button
-            type="button"
-            onClick={copy}
-            className="group rounded-full border border-cream/30 px-6 py-3.5 font-medium transition-colors hover:border-rose hover:text-rose"
-          >
-            <span className="group-data-[copied]:hidden">Copy email</span>
-            <span className="hidden group-data-[copied]:inline">Copied</span>
-          </button>
-        </div>
-        <div className="mt-16 flex flex-wrap gap-8 font-mono text-sm text-sand">
-          <a href={profile.linkedin} target="_blank" rel="noreferrer" className="hover:text-rose">
-            LinkedIn
-          </a>
-          <a href={profile.github} target="_blank" rel="noreferrer" className="hover:text-rose">
-            GitHub
-          </a>
-          <a href={profile.cv} download className="hover:text-rose">
-            CV (PDF)
-          </a>
-        </div>
-      </div>
-    </section>
+    <Section id="contact" label="Contact" className="pb-32 md:pb-40">
+      <h2 className="reveal text-[clamp(3rem,8vw,6.25rem)] leading-none">
+        Let&apos;s build
+        <br />
+        something.{" "}
+        <a href={`mailto:${profile.email}`} className="border-b-2 border-accent transition-colors hover:text-accent dark:border-accent-dark dark:hover:text-accent-dark">
+          Say hi.
+        </a>
+      </h2>
+      <p className="reveal mt-6 text-mute dark:text-mute-dark">{asides.contact}</p>
+      <ul className="reveal mt-12 flex flex-wrap gap-x-8 gap-y-3 text-[15px]">
+        {links.map((l) => (
+          <li key={l.label}>
+            <a
+              href={l.href}
+              target={l.href.startsWith("http") ? "_blank" : undefined}
+              rel="noreferrer"
+              download={l.download || undefined}
+              className="border-b border-line pb-0.5 transition-colors hover:border-current hover:text-accent dark:border-line-dark dark:hover:text-accent-dark"
+            >
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }

@@ -26,11 +26,11 @@ function run(input) {
         "  contact     how to reach her",
         "  cv          download her CV",
         "  clear       clean the screen",
-        "Psst… there are a few hidden commands too 👀",
+        "Psst… there are a few hidden commands too.",
       ];
     case "whoami":
       return [
-        `${profile.firstName} ${profile.lastName}, ${profile.role.toLowerCase()} 👩‍💻`,
+        `${profile.firstName} ${profile.lastName}, ${profile.role.toLowerCase()}`,
         `${profile.status}.`,
         `Motto: "${profile.punchline}"`,
       ];
@@ -44,38 +44,38 @@ function run(input) {
     case "experience":
       return experience.map((e) => `${e.period.padEnd(16, " ")} ${e.title} @ ${e.place}`);
     case "languages":
-      return profile.languages.map((l) => `${l.name.padEnd(9, " ")} ${l.level}`).concat("Python   fluent (it counts, right?) 🐍");
+      return profile.languages.map((l) => `${l.name.padEnd(9, " ")} ${l.level}`).concat("Python   fluent (it counts, right?)");
     case "travel":
-      return [`${countries.length} countries and counting ✈️`, countries.join(" · ")];
+      return [`${countries.length} countries and counting`, countries.join(" · ")];
     case "contact":
       return [link(`mailto:${profile.email}`, `email     ${profile.email}`), link(profile.linkedin, "linkedin  amina-aimeur"), link(profile.github, "github    AIMAMINA")];
     case "cv":
     case "cat":
-      return [link(profile.cv, "📄 cv-amina-aimeur.pdf (click to download)")];
+      return [link(profile.cv, "cv-amina-aimeur.pdf (click to download)")];
     case "sudo":
       if (args.join(" ").toLowerCase().startsWith("hire")) {
         return [
           "[sudo] password for recruiter: ********",
-          "✅ Permission granted.",
-          "Sending offer letter… just kidding, that part is up to you 😄",
+          "Permission granted.",
+          "Sending offer letter… just kidding, that part is up to you.",
           link(`mailto:${profile.email}`, `→ ${profile.email}`),
         ];
       }
-      return ["Nice try. Only `sudo hire-amina` works here 😏"];
+      return ["Nice try. Only `sudo hire-amina` works here."];
     case "hire-amina":
       return ["You'll need admin rights for that. Try: sudo hire-amina"];
     case "coffee":
-      return ["☕ Brewing… done. Productivity +42%."];
+      return ["Brewing… done. Productivity +42%."];
     case "hello":
     case "hi":
     case "bonjour":
     case "salam":
     case "hola":
-      return ["Hello! Bonjour ! مرحبا ! ¡Hola! 👋"];
+      return ["Hello! Bonjour ! مرحبا ! ¡Hola!"];
     case "date":
       return [new Date().toString()];
     case "exit":
-      return ["There is no escape from a good portfolio 😌 (try clear)"];
+      return ["There is no escape from a good portfolio (try clear)"];
     default:
       return [`command not found: ${cmd}. Type help to see what I can do.`];
   }
@@ -86,7 +86,7 @@ const ALL = ["help", "whoami", "projects", "skills", "education", "experience", 
 
 export default function Terminal() {
   const [lines, setLines] = useState([
-    { type: "out", value: "Welcome to amina.sh 🌸 Type help to get started." },
+    { type: "out", value: "Welcome to amina.sh. Type help to get started." },
   ]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
@@ -133,12 +133,12 @@ export default function Terminal() {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-[#1a1416] text-[#f5e6d3] shadow-[0_40px_80px_-30px_rgba(26,20,22,0.6)] ring-1 ring-white/10">
-      <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
-        <span className="size-3 rounded-full bg-[#e8826b]" />
-        <span className="size-3 rounded-full bg-[#e9c7a3]" />
-        <span className="size-3 rounded-full bg-[#b38a4a]" />
-        <span className="ml-3 font-mono text-xs text-[#a8988c]">amina.sh, zsh</span>
+    <div className="overflow-hidden rounded-md border border-line bg-paper text-ink dark:border-line-dark dark:bg-[#111] dark:text-chalk">
+      <div className="flex items-center gap-2 border-b border-line px-4 py-3 dark:border-line-dark">
+        <span className="size-2.5 rounded-full border border-mute/50" />
+        <span className="size-2.5 rounded-full border border-mute/50" />
+        <span className="size-2.5 rounded-full border border-mute/50" />
+        <span className="ml-3 font-mono text-xs text-mute dark:text-mute-dark">amina.sh, zsh</span>
       </div>
 
       <div
@@ -151,10 +151,10 @@ export default function Terminal() {
         {lines.map((l, i) =>
           l.type === "in" ? (
             <p key={i} className="mt-2">
-              <span className="text-[#e8826b]">{PROMPT}</span> {l.value}
+              <span className="text-accent dark:text-accent-dark">{PROMPT}</span> {l.value}
             </p>
           ) : typeof l.value === "string" ? (
-            <p key={i} className="whitespace-pre-wrap text-[#d9c9b6]">
+            <p key={i} className="whitespace-pre-wrap text-mute dark:text-mute-dark">
               {l.value}
             </p>
           ) : (
@@ -164,7 +164,7 @@ export default function Terminal() {
                 target={l.value.href.startsWith("http") ? "_blank" : undefined}
                 rel="noreferrer"
                 download={l.value.href.endsWith(".pdf") || undefined}
-                className="text-[#d9b779] underline decoration-dotted underline-offset-4 hover:text-[#f08a7e]"
+                className="underline decoration-dotted underline-offset-4 hover:text-accent dark:hover:text-accent-dark"
               >
                 {l.value.label}
               </a>
@@ -172,7 +172,7 @@ export default function Terminal() {
           ),
         )}
         <div className="mt-2 flex items-center gap-2">
-          <label htmlFor="terminal-input" className="shrink-0 text-[#e8826b]">
+          <label htmlFor="terminal-input" className="shrink-0 text-accent dark:text-accent-dark">
             {PROMPT}
           </label>
           <input
@@ -184,19 +184,19 @@ export default function Terminal() {
             autoComplete="off"
             autoCapitalize="off"
             spellCheck="false"
-            className="w-full bg-transparent text-[#f5e6d3] caret-[#e8826b] outline-none"
+            className="w-full bg-transparent caret-accent outline-none"
             aria-label="Type a command"
           />
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-t border-white/10 px-4 py-3">
+      <div className="flex flex-wrap gap-2 border-t border-line px-4 py-3 dark:border-line-dark">
         {SUGGESTIONS.map((s) => (
           <button
             key={s}
             type="button"
             onClick={() => submit(s)}
-            className="rounded-full border border-white/15 px-3 py-1 font-mono text-xs text-[#d9c9b6] transition-colors hover:border-[#e8826b] hover:text-[#f08a7e]"
+            className="rounded-full border border-line px-3 py-1 font-mono text-xs text-mute transition-colors hover:border-current hover:text-ink dark:border-line-dark dark:text-mute-dark dark:hover:text-chalk"
           >
             {s}
           </button>

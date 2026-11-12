@@ -19,36 +19,6 @@ export function useReveal() {
   }, []);
 }
 
-/** Types each word, waits, deletes it, then moves to the next one. */
-export function useTypewriter(words, { typing = 85, deleting = 45, pause = 1600 } = {}) {
-  const [text, setText] = useState(words[0]);
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let i = 0;
-    let len = words[0].length;
-    let removing = false;
-    let timer;
-    const tick = () => {
-      const word = words[i];
-      if (!removing && len === word.length) {
-        removing = true;
-        timer = setTimeout(tick, pause);
-        return;
-      }
-      if (removing && len === 0) {
-        removing = false;
-        i = (i + 1) % words.length;
-      }
-      len += removing ? -1 : 1;
-      setText(words[i].slice(0, len));
-      timer = setTimeout(tick, removing ? deleting : typing);
-    };
-    timer = setTimeout(tick, pause);
-    return () => clearTimeout(timer);
-  }, [words, typing, deleting, pause]);
-  return text;
-}
-
 /** Light / dark theme, remembered between visits. */
 export function useTheme() {
   const [dark, setDark] = useState(() => {
